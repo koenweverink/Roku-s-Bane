@@ -6,4 +6,4 @@ git commit -m "message"
 
 git push origin master
 
-test
+test test
