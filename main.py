@@ -4,7 +4,7 @@ import numpy as np
 
 
 dt = 0.0001
-comet = Comet(V_init = 2.2E4, M_init=0.9, angle=45)
+comet = Comet(V_init = 2.2E4, M_init=1.1, angle=45)
 
 masses: list[float] = [comet.m]
 velocities: list[float] = [comet.v]
@@ -19,7 +19,8 @@ while comet.x < 2E5 and comet.m > 0:
     distances.append(comet.x)
     t += dt
 
-print("Final mass: ", masses[-1])
+print("Initial velicity:" , velocities[0], "Final velocity:", velocities[-1])
+print("Initial mass:", masses[0], "Final mass:", masses[-1])
 print("At timestep: ", t)
 
 if comet.x >= 2E5:

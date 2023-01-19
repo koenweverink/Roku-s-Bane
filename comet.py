@@ -1,6 +1,7 @@
 import numpy as np
 
 class Comet:
+    
     def __init__(self, V_init: float, M_init: float, angle: int) -> None:
         
         # constants, nonmutable variables

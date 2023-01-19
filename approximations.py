@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Approx:
-
+    
     def __init__(self) -> None:
         return None
     
