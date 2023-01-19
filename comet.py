@@ -1,9 +1,10 @@
 import numpy as np
+from approximations import Approx
 
-class Comet:
-    def __init__(self, V_init: float, M_init: float, angle: int, h: float, m: float, v: float, \
+class Comet(Approx):
+    def __init__(self, V_init: float, M_init: float, angle: int, h: float, x: float, m: float, v: float, \
             R: int = 6371000, C_d: float = 0.47, C_h: float = 0.1, sigma: float = 5.6697E-8, \
-            T: int = 1000, Q: int = 8, g: float = 9.81) -> None:
+            T: int = 1000, Q: int = 8, g: float = 9.81, total_height: int = 2E5) -> None:
         
         # constants, nonmutable variables
         self.R = R  # Radius of the Earth  
@@ -13,6 +14,7 @@ class Comet:
         self.T = T    # Temperature in K
         self.Q = Q       # Heat of ablation in MJ
         self.g = g    # gravitational constant
+        self.total_height = total_height
 
         # experimental starting values
         self.angle = angle      # angle of entry
@@ -23,6 +25,7 @@ class Comet:
         self.h = h      # distance from the earth (m)
         self.m = m      # mass (kg)
         self.v = v      # velocity (m/s) ??
+        self.x = self.total_height - self.h     # projected area
 
 
     
@@ -33,7 +36,7 @@ class Comet:
         """
         self.v = self.V_init
         self.m = self.M_init
-        self.h = 200000.0  #klopt dit? ja
+        self.h = 200000.0  
         
 
     # Simple Formulas
@@ -145,7 +148,7 @@ class Comet:
         return acceleration
 
 
-    def air_density(self) -> float:
+    def air_density(self) -> float: # fix dit
         """
         Calculates the air density at different heights (h)
 
@@ -198,7 +201,7 @@ class Comet:
         value = min(param1, param2)
 
         dM_dt = -self.projected_area(radius) * (value / (self.m * self.Q))
-    #    self.m = self.m + dM_dt
+    #    self.m = self.m + (dM_dt * dt)
         return dM_dt
 
 
