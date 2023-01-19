@@ -1,17 +1,28 @@
 from comet import Comet
-from approximations import Approx
+from approximations import Approx as app
 import numpy as np
 
 
-# define properties of comet
-# define timesteps etc
+dt = 0.0001
+comet = Comet(V_init = 2.2E4, M_init=0.9, angle=45)
 
-comet1 = Comet(V_init = 1.84E4, M_init=10.0, angle= 45, h= 2E5, m=10.0, v = 1.8E4)
+masses: list[float] = [comet.m]
+velocities: list[float] = [comet.v]
+distances: list[float] = [0]
+t = 0
+while comet.x < 2E5 and comet.m > 0:
+    mass = app.euler(dt, comet)
+    velocity = app.velocity_verlet(dt, comet)
 
+    masses.append(mass)
+    velocities.append(comet.v)
+    distances.append(comet.x)
+    t += dt
 
+print("Final mass: ", masses[-1])
+print("At timestep: ", t)
 
-
-# start loop, while loop conditions
-
-# add outcomes to lists
-
+if comet.x >= 2E5:
+    print("hit")
+else:
+    print("miss")

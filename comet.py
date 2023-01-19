@@ -1,59 +1,46 @@
 import numpy as np
-from approximations import Approx
 
-class Comet(Approx):
-    def __init__(self, V_init: float, M_init: float, angle: int, h: float, x: float, m: float, v: float, \
-            R: int = 6371000, C_d: float = 0.47, C_h: float = 0.1, sigma: float = 5.6697E-8, \
-            T: int = 1000, Q: int = 8, g: float = 9.81, total_height: int = 2E5) -> None:
+class Comet:
+    def __init__(self, V_init: float, M_init: float, angle: int) -> None:
         
         # constants, nonmutable variables
-        self.R = R  # Radius of the Earth  
-        self.C_d = C_d # Drag coefficient
-        self.C_h = C_h  # Heat transfer coefficient
-        self.sigma = sigma    # Stefan-Boltzmann constant       
-        self.T = T    # Temperature in K
-        self.Q = Q       # Heat of ablation in MJ
-        self.g = g    # gravitational constant
-        self.total_height = total_height
+        self.R: float = 6371000         # Radius of the Earth (m) 
+        self.C_d: float = 0.47          # Drag coefficient
+        self.C_h: float = 0.045         # Heat transfer coefficient; backed by different source, max val
+        self.sigma: float = 5.6697E-8   # Stefan-Boltzmann constant       
+        self.T: int = 2073.2            # Temperature (K)   ->  iffy opzoeken
+        self.Q: int = 8.26E6            # Heat of ablation (J)  -> J of MJ???
+        self.g: float = 9.81            # gravitational constant (m/s^2)
+        self.total_height: float = 2E5  # initial height (m)
 
         # experimental starting values
         self.angle = angle      # angle of entry
-        self.V_init = V_init    # initial velocity
-        self.M_init = M_init    # initial mass
+        self.V_init = V_init    # initial velocity (m/s)
+        self.M_init = M_init    # initial mass (kg)
 
-        # updating variables
-        self.h = h      # distance from the earth (m)
-        self.m = m      # mass (kg)
-        self.v = v      # velocity (m/s) ??
-        self.x = self.total_height - self.h     # projected area
-
-
-    
-    def comet_assembly(self) -> None:
-        """
-        Saves the initial values to the updated values for the start of the simulation.
-
-        """
-        self.v = self.V_init
-        self.m = self.M_init
-        self.h = 200000.0  
+        # updating variables (with initial values)
+        self.h: float = 2E5     # distance from the earth (m)
+        self.m = M_init         # mass (kg)
+        self.v = V_init         # velocity (m/s) 
+        self.x = 0              # distance traveled (m)
+        self.r = 1              # radius of comet (m)
         
 
     # Simple Formulas
     def gravity(self) -> float:
         """
         Calculates the gravitation constant at the height of the comet above the earth
-        >>> x, y = Comet(15000, 100000, 30, 200000, 90000, 10000), Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x, y = Comet(15000, 100000, 30), Comet(15000, 100000, 30)
         >>> x.h, y.h = 100, 1000
         >>> x.gravity() > y.gravity()
         True
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.h = 3
         >>> x.gravity() == 9.81 * (1 - 6/x.R)
         True
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.h = 500
         >>> type(x.gravity()) == float
         True
@@ -67,11 +54,11 @@ class Comet(Approx):
     def weight(self) -> float:
         """
         Calculates the weight of the comet
-        >>> x, y = Comet(15000, 100000, 30, 200000, 90000, 10000), Comet(15000, 10000, 30, 200000, 9000, 10000)
+        >>> x, y = Comet(15000, 100000, 30), Comet(15000, 10000, 30)
         >>> y.weight() < x.weight()
         True
         
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> type(x.weight()) == float
         True
         """
@@ -83,11 +70,11 @@ class Comet(Approx):
         Gives the 2d area of the 3d meteor that faces the direction of velocity,
         or in other words, the area undergoing most air pressure.
         
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.projected_area(100.0) > x.projected_area(10.0)
         True
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> type(x.projected_area(100.0)) == float
         True
         """
@@ -98,15 +85,15 @@ class Comet(Approx):
         """
         Calculates the amount of air friction given the projected area and velocity.
         
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.air_friction(100) < x.air_friction(10)
         True
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.air_friction(10) == x.air_friction(10)
         True
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> type(x.air_friction(10)) == float
         True
         """
@@ -118,7 +105,7 @@ class Comet(Approx):
         """
         Calculates the total force of the meteorite based on its weight and size
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.total_force(20) < x.total_force(50)
         False
 
@@ -137,7 +124,7 @@ class Comet(Approx):
         """
         Calculates the acceleration of the meteorite based on its size and mass
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
         >>> x.acceleration(100) < x.acceleration(20)
         True
 
@@ -152,15 +139,18 @@ class Comet(Approx):
         """
         Calculates the air density at different heights (h)
 
-        >>> x = Comet(15000, 100000, 30, 200000, 90000, 10000)
+        >>> x = Comet(15000, 100000, 30)
+        >>> x.h = 3E5
         >>> x.air_density()
         5.365972601885816e-07
 
-        >>> x = Comet(15000, 100000, 30, 20000, 90000, 10000) 
+        >>> x = Comet(15000, 100000, 30)
+        >>> x.h = 15000 
         >>> x.air_density()
         0.0015261813207342312
 
-        >>> x = Comet(15000, 100000, 30, 10000, 90000, 10000) 
+        >>> x = Comet(15000, 100000, 30) 
+        >>> x.h = 1000
         >>> x.air_density()
         0.0017562828078283295
         """
@@ -195,16 +185,22 @@ class Comet(Approx):
         """
         Calculates the change in mass over time of the meteorite
         """
-        param1 = (self.C_h * self.air_density() * self.V_init**3) / 2 
+        param1 = (self.C_h * self.air_density() * self.V_init**3) / 2
         param2 = self.sigma * self.T**4
 
+        # print(param1)
+        # print(param2)
+
         value = min(param1, param2)
+        # print(value)
 
         dM_dt = -self.projected_area(radius) * (value / (self.m * self.Q))
+        # dM_dt = -self.projected_area(radius) * (value / (self.Q))
+        # print(dM_dt)
     #    self.m = self.m + (dM_dt * dt)
         return dM_dt
 
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+# if __name__ == "__main__":
+#     import doctest
+#     doctest.testmod()
