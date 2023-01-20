@@ -4,7 +4,7 @@ import numpy as np
 
 
 dt = 0.0001
-comet = Comet(V_init = 2.2E4, M_init=1.1, angle=45)
+comet = Comet(V_init = 2.2E4, M_init=1000, angle=45)
 
 masses: list[float] = [comet.m]
 velocities: list[float] = [comet.v]
