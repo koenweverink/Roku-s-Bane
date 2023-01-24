@@ -1,4 +1,4 @@
-from comet import Comet
+from comet2 import Comet
 import numpy as np
 
 
@@ -17,7 +17,9 @@ class Approx:
         v_half_t = comet.v + acc * 1/2 * dt
         
         """calculate movement over timestep"""
-        comet.x = comet.x + v_half_t * dt
+        comet.x += v_half_t * dt
+        comet.h -= v_half_t * dt
+        print(comet.h)
 
         """derive new acc for timestep from position"""
         acc2 = comet.change_in_velocity()
@@ -30,6 +32,7 @@ class Approx:
     @staticmethod
     def euler(dt: float, comet: Comet) -> float:
         dM_dt = comet.change_in_mass()
+
         comet.m = comet.m + (dM_dt * dt)
         return comet.m
 

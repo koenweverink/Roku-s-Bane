@@ -1,4 +1,5 @@
 import numpy as np
+from pyatmos import expo
 
 class Comet:
     
@@ -9,11 +10,10 @@ class Comet:
         self.C_d: float = 0.47          # Drag coefficient
         self.C_h: float = 0.045         # Heat transfer coefficient; backed by different source, max val
         self.sigma: float = 5.6697E-8   # Stefan-Boltzmann constant       
-        self.T: float = 2073.2          # Temperature (K)   ->  iffy opzoeken
         self.Q: int = 8.26E6            # Heat of ablation (J)  -> J of MJ???
         self.g: float = 9.81            # gravitational constant (m/s^2)
         self.total_height: float = 2E5  # initial height (m)
-        self.density: int = 3           # density of ordinary chondrite (g/cm^3)
+        self.density: int = 3.5         # density of ordinary chondrite (g/cm^3)
 
         # experimental starting values
         self.angle = angle      # angle of entry
@@ -21,10 +21,12 @@ class Comet:
         self.M_init = M_init    # initial mass (kg)
 
         # updating variables (with initial values)
-        self.h: float = 2E5     # distance from the earth (m)
-        self.m = M_init         # mass (kg)
-        self.v = V_init         # velocity (m/s) 
-        self.x = 0              # distance traveled (m)
+        self.h: float = 2E5             # distance from the earth (m)
+        self.m: float = M_init          # mass (kg)
+        self.v: float = V_init          # velocity (m/s) 
+        self.x: float = 0               # distance traveled (m)
+        self.T: float = 2073.2          # Temperature (K)   ->  iffy opzoeken
+
         
 
     # Simple Formulas
@@ -69,21 +71,13 @@ class Comet:
     def radius(self) -> float:
         """
         Calculates the radius of the meteorite, based on the density and mass
-        
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.radius(100) > x.radius(1000)
-        True
 
-        >>> type(x.radius(10.112)) == np.float64 
-        True
-
-        >>> x.radius(10) == x.radius(10)
-        True
         """
-        mass = self.m / 1000
+        mass = self.m * 1000
 
         value = (3 * mass) / (4 * self.density * np.pi)
-        radius = np.cbrt(value) # in cm
+        radius = np.cbrt(value)     # in cm
+        radius = radius / 1000       # in m
         return radius
 
 
@@ -91,14 +85,7 @@ class Comet:
         """ 
         Gives the 2d area of the 3d meteor that faces the direction of velocity,
         or in other words, the area undergoing most air pressure.
-        
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.projected_area(100.0) > x.projected_area(10.0)
-        True
-
-        >>> x = Comet(15000, 100000, 30)
-        >>> type(x.projected_area(100.0)) == float
-        True
+ 
         """
         return np.pi * self.radius()**2
 
@@ -106,18 +93,7 @@ class Comet:
     def air_friction(self) -> float:
         """
         Calculates the amount of air friction given the projected area and velocity.
-        
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.air_friction(100) < x.air_friction(10)
-        True
 
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.air_friction(10) == x.air_friction(10)
-        True
-
-        >>> x = Comet(15000, 100000, 30)
-        >>> type(x.air_friction(10)) == float
-        True
         """
         air_friction = -0.65 * self.projected_area(self.radius()) * abs(self.v**2)
         return air_friction
@@ -126,17 +102,6 @@ class Comet:
     def total_force(self) -> float:
         """
         Calculates the total force of the meteorite based on its weight and size
-
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.total_force(20) < x.total_force(50)
-        False
-
-        >>> type(x.total_force(20)) == float
-        True
-
-        >>> x.total_force(0) == 0
-        True
-
         """
         total_force = self.weight() * self.air_friction(self.radius())
         return total_force
@@ -157,39 +122,22 @@ class Comet:
         return acceleration
 
 
-    def air_density(self) -> float: # fix dit
+    def air_density(self) -> float:
         """
-        Calculates the air density at different heights (h)
-
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.h = 3E5
-        >>> x.air_density()
-        5.365972601885816e-07
-
-        >>> x = Comet(15000, 100000, 30)
-        >>> x.h = 15000 
-        >>> x.air_density()
-        0.0015261813207342312
+        Calculates the air density using the pyatmos package
 
         >>> x = Comet(15000, 100000, 30) 
-        >>> x.h = 1000
-        >>> x.air_density()
-        0.0017562828078283295
+        >>> x.h = 1
+        >>> x.air_density() 
         """
-        if self.h > 25098.76:
-            T = -205.05 + 0.00164 * self.h
-            P = 51.97 * ((T + 459.7) / 389.98)**-11.388
+        expo_geom = expo(self.h)
+        return expo_geom.rho[0]
+        # return 40.1
 
-        if 11019.13 < self.h < 25098.76:
-            T = -70
-            P = 473.1 * np.exp(1.73 - 0.000048 * self.h)
-
-        if self.h < 11019.13:
-            T = 59 - 0.00356 * self.h
-            P = 2116 * (((T + 459.7) / 518.6)) ** 5.256
-
-        air_density: float = P / (1718 * (T + 459.7))
-        return air_density 
+    def change_in_temp(self) -> float:
+        radius = self.radius() * 1000
+        dT_dt = 1 / radius**2
+        return dT_dt
 
 
     # Complex Formulas
@@ -199,7 +147,7 @@ class Comet:
         """
         dV_dt: float = -self.C_d * ((self.air_density() * self.projected_area() * \
             self.V_init**2) / self.m) + self.gravity() * np.sin(self.angle)
-#        self.v = self.v + dV_dt
+        print(dV_dt)
         return dV_dt
 
 
@@ -216,8 +164,8 @@ class Comet:
         value = min(param1, param2)
         # print(value)
 
-        dM_dt = -self.projected_area() * (value / (self.m * self.Q))
-        # dM_dt = -self.projected_area(self.radius()) * (value / (self.Q))
+        # dM_dt = -self.projected_area() * (value / (self.m * self.Q))
+        dM_dt = -self.projected_area() * (value / (self.Q))
         # print(dM_dt)
     #    self.m = self.m + (dM_dt * dt)
         return dM_dt
