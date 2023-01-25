@@ -18,8 +18,6 @@ class Approx:
         
         """calculate movement over timestep"""
         comet.x += v_half_t * dt
-        comet.h -= v_half_t * dt
-        print(comet.h)
 
         """derive new acc for timestep from position"""
         acc2 = comet.change_in_velocity()
