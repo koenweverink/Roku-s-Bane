@@ -12,6 +12,7 @@ class Comet:
         self.Q: int = 3E6                   # Heat of ablation (J)
         self.density: int = 3500            # density of ordinary chondrite (kg/m^3)
         self.shape_factor = 1.2             # shape factor
+        self.g = 9.81                       # gravitational constant
 
         # experimental starting values
         self.angle = angle                  # angle of entry
@@ -19,7 +20,7 @@ class Comet:
         self.M_init = M_init                # initial mass (kg)
 
         # updating variables (with initial values)
-        self.h: float = 1.5E5               # distance from the earth (m)
+        self.h: float = 2.0E5               # distance from the earth (m)
         self.m = M_init                     # mass (kg)
         self.v = V_init                     # velocity (m/s) 
         self.x = 0                          # distance traveled (m)
@@ -85,7 +86,7 @@ class Comet:
 
 
     def change_in_velocity(self):
-        dV_dt = -(self.C_d * self.shape_factor * self.air_density() * (self.v**2)) / ((self.m**(1/3)) * self.density**(2/3))
+        dV_dt = -(self.C_d * self.shape_factor * self.air_density() * (self.v**2)) / ((self.m**(1/3)) * self.density**(2/3)) + (self.g * np.cos(self.angle))
         return dV_dt
 
 
