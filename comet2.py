@@ -14,15 +14,15 @@ class Comet:
         self.shape_factor = 1.2             # shape factor
 
         # experimental starting values
-        self.angle = angle      # angle of entry
-        self.V_init = V_init    # initial velocity (m/s)
-        self.M_init = M_init    # initial mass (kg)
+        self.angle = angle                  # angle of entry
+        self.V_init = V_init                # initial velocity (m/s)
+        self.M_init = M_init                # initial mass (kg)
 
         # updating variables (with initial values)
-        self.h: float = 1.2E5     # distance from the earth (m)
-        self.m = M_init         # mass (kg)
-        self.v = V_init         # velocity (m/s) 
-        self.x = 0              # distance traveled (m)
+        self.h: float = 1.5E5               # distance from the earth (m)
+        self.m = M_init                     # mass (kg)
+        self.v = V_init                     # velocity (m/s) 
+        self.x = 0                          # distance traveled (m)
 
 
 
@@ -79,17 +79,20 @@ class Comet:
         >>> x.air_density()
         0.0017562828078283295
         """
-        air_density = 1.25 * np.exp(-self.h / 7000)
+        height = self.h
+        air_density = 1.3 * np.exp(-height / 7000)
         return air_density
 
 
     def change_in_velocity(self):
-        dV_dt = -(self.C_d * self.shape_factor * self.air_density() * (self.v**2)) / ((self.m**(1/3)) * (self.density**(2/3)))
+        dV_dt = -(self.C_d * self.shape_factor * self.air_density() * (self.v**2)) / ((self.m**(1/3)) * self.density**(2/3))
         return dV_dt
 
 
     def change_in_mass(self):
-        dM_dt = -(self.C_h * self.shape_factor * self.air_density() * (self.v**3) * ((self.m / self.density)**(2/3))) / (2 * self.Q )
+    #     dM_dt = -(self.C_h * self.shape_factor * self.air_density() * (self.v**3) * (self.m**(2/3))) / (2 * self.Q * self.density**(2/3))
+    
+        dM_dt = -(self.C_h * self.shape_factor * self.air_density() * (self.v**3) * ((self.m / self.density)**(2/3)) / (2 * self.Q))
         return dM_dt
 
 
