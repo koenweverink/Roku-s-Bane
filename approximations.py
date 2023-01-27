@@ -8,31 +8,37 @@ class Approx:
         return None
     
     @staticmethod
-    def velocity_verlet(dt: float, comet: Comet) -> tuple[float, float]:
-        """Verlet approximation per timestep"""
+    def velocity_verlet(dt: float, comet: Comet) -> None:
+        """
+        Verlet approximation of acceleration.
+        """
     
         acc = comet.change_in_velocity()
 
-        """calculate half timestep velocity"""
+        # calculate half timestep velocity
         v_half_t = comet.v + acc * 1/2 * dt
         
-        """calculate movement over timestep"""
+        # calculate movement over timestep
         comet.x += v_half_t * dt
+        comet.h -= v_half_t * dt * (np.cos(comet.angle * (np.pi / 180)))
 
-        """derive new acc for timestep from position"""
-        acc2 = comet.change_in_velocity()
+        # derive new acc for timestep from position
+        acc = comet.change_in_velocity()
 
-        """calculate velocity for time"""
-        comet.v = v_half_t + 1/2 * acc2 * dt
+        # calculate velocity for end timestep
+        comet.v = v_half_t + 1/2 * acc * dt
         
-        return comet.x, comet.v
+        return None
 
     @staticmethod
-    def euler(dt: float, comet: Comet) -> float:
+    def euler(dt: float, comet: Comet) -> None:
+        """
+        Euler approximation of change in mass.
+        """
         dM_dt = comet.change_in_mass()
 
-        comet.m = comet.m + (dM_dt * dt)
-        return comet.m
+        comet.m += dM_dt * dt
+        return None
 
 
 
