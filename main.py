@@ -6,14 +6,11 @@ from numba import jit
 import matplotlib.pyplot as plt
 
 filename = 'nasa_dataset\\impacts.csv'
-dt = 0.01
+dt = 0.001
 
 asteroids = Asteroids(filename)
 V_inits = asteroids.velocity()
 M_inits = asteroids.mass()
-
-init_velo = [10000, 14000, 18000, 22000, 26000, 30000, 34000, 38000]
-init_mass = [0.05, 0.1, 0.2, 0.72, 2.64, 13.5, 132, 13000]
 
 
 
@@ -46,6 +43,12 @@ def sim(V_init: int, M_init: float, angle: int = 45) -> tuple[np.ndarray, np.nda
         # print(comet.v)
     return masses, velocities, distances, t
 
+
+"""Validation"""
+
+# Data from Metha et al. (2018) article to validate simulation
+init_velo = [10000, 14000, 18000, 22000, 26000, 30000, 34000, 38000]
+init_mass = [0.05, 0.1, 0.2, 0.72, 2.64, 13.5, 132, 13000]
 errors: list[float] = []
 
 for i in range(len(init_velo)):
