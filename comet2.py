@@ -22,7 +22,7 @@ class Comet:
         self.h: float = 2.0E5               # distance from the earth (m)
         self.m: float = M_init              # mass (kg)
         self.v: float = V_init              # velocity (m/s) 
-        self.x: float = 0                   # distance traveled (m)
+        self.w: float = 0                   # distance traveled (m)
 
 
     def air_density(self) -> float: # fix dit

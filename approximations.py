@@ -19,7 +19,7 @@ class Approx:
         v_half_t = comet.v + acc * 1/2 * dt
         
         # calculate movement over timestep
-        comet.x += v_half_t * dt
+        comet.w += v_half_t * dt * (np.sin(comet.angle * (np.pi / 180)))
         comet.h -= v_half_t * dt * (np.cos(comet.angle * (np.pi / 180)))
 
         # derive new acc for timestep from position
