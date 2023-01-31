@@ -59,7 +59,7 @@ class Comet:
         Returns the acceleration (m/s^2)
         """
         dV_dt = -(self.C_d * self.shape_factor * self.air_density() * (self.v**2)) \
-            / ((self.m**(1/3)) * self.density**(2/3)) + (self.g * np.cos(self.angle))
+            / ((self.m**(1/3)) * self.density**(2/3)) + (self.g * np.cos(self.angle * (180 * np.pi)))
         return dV_dt
 
 
