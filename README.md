@@ -1,5 +1,9 @@
 # Roku-s-Bane
 Project Computational Science
+University of Amsterdam
+
+Eva Peet (12702803), Nathan Pieterse (12649724) and Koen Weverink (14711982)
+
 
 ## Project description
 This project simulates asteroids entering Earth's atmospere using both Euler and Velocity Verlet to solve differential equations.
