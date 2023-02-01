@@ -1,4 +1,4 @@
-from comet2 import Comet
+from comet import Comet
 import numpy as np
 
 
@@ -22,7 +22,7 @@ class Approx:
         comet.w += v_half_t * dt * (np.sin(comet.angle * (np.pi / 180)))
         comet.h -= v_half_t * dt * (np.cos(comet.angle * (np.pi / 180)))
 
-        # derive new acc for timestep from position
+        # derive new acc for timestep from the new position
         acc = comet.change_in_velocity()
 
         # calculate velocity for end timestep

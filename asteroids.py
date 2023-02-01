@@ -18,6 +18,10 @@ class Asteroids:
 
 
     def velocity(self):
+        """
+        Gets the velocity of each asteroid from NASA's impacts.csv 
+        and transforms it from km/s to m/s.
+        """
         velocity_list_kms = self.df['Asteroid Velocity'].to_list()
         velocity_list_ms = [velocity * 1000 for velocity in velocity_list_kms]
 
@@ -25,6 +29,10 @@ class Asteroids:
     
 
     def mass(self):
+        """
+        Gets the diameter (km) of each asteroid from NASA's impacts.csv and transforms 
+        it to mass in kg, by using the density of an ordinary chondrite (3500 kg/m^3)
+        """
         diameter_list = self.df['Asteroid Diameter (km)'].to_list()
 
         # in meter 
