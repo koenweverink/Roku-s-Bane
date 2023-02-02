@@ -30,5 +30,5 @@ In order to run the model, perform the following steps:
 
 1. Install the required packages by navigating to the Roku-s-Bane directory and typing in a terminal: pip install -r requirements.txt
 2. Open analysis.ipynb in a preferred notebook editor
-3. Run the preferred cells, or simply press 'run all' (The 'run all' will take approximately 3 minutes)
+3. Run the preferred cells, or simply press 'run all' (The 'run all' will take approximately 3-5 minutes)
 4. A .png will appear in the same folder, named: reproduced_fig.png. The figure to which this newly generated png needs to be compared to is already present in the folder, named: fig_to_reproduce.png
